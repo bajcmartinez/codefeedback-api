@@ -1,8 +1,6 @@
 from fastapi import APIRouter
 
-from app.endpoints.health import health
-from app.endpoints.feedback import feedback
-
+from app.endpoints import feedback, health
 
 router = APIRouter()
 
