@@ -13,7 +13,6 @@ class FeedbackStatus(str, Enum):
 
 
 class FeedbackBase(BaseModel):
-    org_id: str
     board_id: str
     title: str
     body: str
@@ -46,10 +45,12 @@ class FeedbackIn(FeedbackBase):
 
 
 class FeedbackKeys(BaseModel):
+    org_id: str
+    board_id: str | None = None
     id: str
 
     def get_pk(self):
-        return {'PK': {'S': f'FEEDBACK#{self.id}'}}
+        return {'PK': {'S': f'ORG#{self.org_id}'}}
 
     def get_sk(self):
         return {'SK': {'S': f'FEEDBACK#{self.id}'}}
@@ -110,7 +111,7 @@ class Feedback(FeedbackBase, FeedbackKeys):
     @staticmethod
     def from_db(attributes):
         return FeedbackOut(
-            id=attributes['PK']['S'].split('#')[1],
+            id=attributes['SK']['S'].split('#')[1],
             org_id=attributes['GSI1PK']['S'].split('#')[1],
             board_id=attributes['GSI1PK']['S'].split('#')[2],
             title=attributes['Title']['S'],

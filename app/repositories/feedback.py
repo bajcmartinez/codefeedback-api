@@ -11,8 +11,9 @@ table_name = 'codefeedback'
 class FeedbackRepository:
 
     @staticmethod
-    def create_feedback(feedback_in: FeedbackIn, user_id: str) -> FeedbackOut:
+    def create_feedback(org_id: str, feedback_in: FeedbackIn, user_id: str) -> FeedbackOut:
         feedback = Feedback.model_validate(feedback_in.model_dump() | {
+            "org_id": org_id,
             "id": str(Ksuid()),
             "created_date": datetime.now(timezone.utc),
             "created_by": user_id,
@@ -30,11 +31,14 @@ class FeedbackRepository:
         return FeedbackOut.model_validate(feedback.model_dump())
 
     @staticmethod
-    def get_feedback(feedback_id: str) -> FeedbackOut | None:
+    def get_feedback(org_id: str, feedback_id: str) -> FeedbackOut | None:
         db_client = boto3.client('dynamodb')
         response = db_client.get_item(
             TableName=table_name,
-            Key=FeedbackKeys(id=feedback_id).get_keys()
+            Key=FeedbackKeys(
+                org_id=org_id,
+                id=feedback_id,
+            ).get_keys()
         )
 
         if 'Item' not in response:

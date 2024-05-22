@@ -8,7 +8,6 @@ def test_feedback_create(
         test_client: TestClient
 ):
     feedback_in = FeedbackIn(
-        org_id="acme",
         board_id="test",
         title="Test",
         body="The body of the feedback",
@@ -27,7 +26,6 @@ def test_feedback_get(
         test_client: TestClient
 ):
     feedback_in = FeedbackIn(
-        org_id="acme",
         board_id="test",
         title="Test",
         body="The body of the feedback",
