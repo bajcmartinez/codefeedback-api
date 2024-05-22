@@ -12,12 +12,13 @@ class FeedbackRepository:
 
     @staticmethod
     def create_feedback(org_id: str, feedback_in: FeedbackIn, user_id: str) -> FeedbackOut:
+        curr_date = datetime.now(timezone.utc)
         feedback = Feedback.model_validate(feedback_in.model_dump() | {
             "org_id": org_id,
             "id": str(Ksuid()),
-            "created_date": datetime.now(timezone.utc),
+            "created_date": curr_date,
             "created_by": user_id,
-            "updated_date": datetime.now(timezone.utc),
+            "updated_date": curr_date,
             "updated_by": user_id
         })
 

@@ -1,23 +1,21 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Security
 
 from app.models.feedback import FeedbackIn, FeedbackOut
 from app.repositories.feedback import FeedbackRepository
+from utils.auth import auth
 
 router = APIRouter(prefix='/feedback', tags=['Feedback'])
 
 
 @router.post('', status_code=201)
-async def create_feedback(feedback_in: FeedbackIn) -> FeedbackOut:
-    # FIXME: retrieve the organization from the JWT token
-    org_id = "fixme"
-    # FIXME: retrieve the user from the JWT token
-    return FeedbackRepository.create_feedback(org_id, feedback_in, "")
+async def create_feedback(feedback_in: FeedbackIn, token_payload=Security(auth.get_authenticated_user)) -> FeedbackOut:
+    org_id = token_payload['org_id']
+    user_id = token_payload['sub']
+    return FeedbackRepository.create_feedback(org_id, feedback_in, user_id)
 
 
-@router.get('/{feedback_id}')
-async def get_feedback(feedback_id: str) -> FeedbackOut:
-    # FIXME: retrieve the organization from the JWT token
-    org_id = "fixme"
+@router.get('/{org_id}/{feedback_id}')
+async def get_feedback(org_id: str, feedback_id: str) -> FeedbackOut:
     feedback = FeedbackRepository.get_feedback(org_id, feedback_id)
 
     if feedback is None:

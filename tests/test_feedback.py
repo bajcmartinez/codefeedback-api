@@ -32,14 +32,15 @@ def test_feedback_get(
         internal_status=FeedbackStatus.reviewing,
         status="In Review"
     )
-    # feedback_out = FeedbackRepository.create_feedback(feedback_in)
     response = test_client.post('/feedback', json=jsonable_encoder(feedback_in.model_dump()))
     assert response.status_code == 201
     data = response.json()
     assert 'id' in data and data['id'] is not None
 
     feedback_id = data['id']
-    response = test_client.get(f'/feedback/{feedback_id}')
+    org_id = data['org_id']
+
+    response = test_client.get(f'/feedback/{org_id}/{feedback_id}')
     assert response.status_code == 200
     data = response.json()
     assert 'id' in data and data['id'] == feedback_id
@@ -49,5 +50,5 @@ def test_feedback_get_non_existent(
         dynamodb_client,
         test_client: TestClient
 ):
-    response = test_client.get(f'/feedback/not-existent')
+    response = test_client.get(f'/feedback/org/not-existent')
     assert response.status_code == 404
