@@ -22,3 +22,8 @@ async def get_feedback(org_id: str, feedback_id: str) -> FeedbackOut:
         raise HTTPException(status_code=404, detail='Feedback not found')
 
     return feedback
+
+
+@router.delete('/{org_id}/{feedback_id}', status_code=204)
+async def delete_feedback(org_id: str, feedback_id: str) -> None:
+    FeedbackRepository.delete_feedback(org_id, feedback_id)

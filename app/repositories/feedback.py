@@ -46,3 +46,15 @@ class FeedbackRepository:
             return None
 
         return FeedbackOut.from_db(response['Item'])
+
+
+    @staticmethod
+    def delete_feedback(org_id: str, feedback_id: str) -> None:
+        db_client = boto3.client('dynamodb')
+        response = db_client.delete_item(
+            TableName=table_name,
+            Key=FeedbackKeys(
+                org_id=org_id,
+                id=feedback_id,
+            ).get_keys()
+        )
